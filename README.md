@@ -8,7 +8,7 @@
   <a href="#license"><img src="https://gh.kaos.st/apache2.svg"></a>
 </p>
 
-<p align="center"><a href="#installation">Installation</a> • <a href="#build-status">Build Status</a> • <a href="#contributing">Contributing</a> • <a href="#license">License</a></p>
+<p align="center"><a href="#installation">Installation</a> • <a href="#badges">Badges</a> • <a href="#build-status">Build Status</a> • <a href="#contributing">Contributing</a> • <a href="#license">License</a></p>
 
 <br/>
 
@@ -23,7 +23,7 @@ sudo yum install -y https://yum.kaos.st/get/$(uname -r).rpm
 sudo yum install updown-badge-server
 ```
 
-### Badges examples
+### Badges
 
 | Endpoint              | Badges |
 |-----------------------|--------|
