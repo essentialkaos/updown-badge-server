@@ -1,4 +1,9 @@
-# This is configuration file for updown-badge
+# Configuration file for updown-badge-server
+
+[main]
+
+  # Maximum number of CPUs that can be executing simultaneously
+  max-procs: 4
 
 [updown]
 

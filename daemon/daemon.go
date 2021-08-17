@@ -9,6 +9,7 @@ package daemon
 
 import (
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
@@ -38,7 +39,7 @@ import (
 // Basic service info
 const (
 	APP  = "UpDownBadgeServer"
-	VER  = "1.0.0"
+	VER  = "1.1.0"
 	DESC = "Service for generating badges for updown.io checks"
 )
 
@@ -47,6 +48,8 @@ const (
 	MAX_PORT         = 65535
 	MIN_CACHE_PERIOD = 60   // 1 min
 	MAX_CACHE_PERIOD = 3600 // 1 hour
+	MIN_PROCS        = 1
+	MAX_PROCS        = 256
 )
 
 // Options
@@ -59,6 +62,7 @@ const (
 
 // Configuration file properties
 const (
+	MAIN_MAX_PROCS = "main:max-procs"
 	UPDOWN_API_KEY = "updown:api-key"
 	BADGE_FONT     = "badge:font"
 	BADGE_STYLE    = "badge:style"
@@ -118,6 +122,7 @@ func Init() {
 
 	loadConfig()
 	validateConfig()
+	configureRuntime()
 	registerSignalHandlers()
 	setupLogger()
 	createPidFile()
@@ -150,6 +155,10 @@ func validateConfig() {
 		{UPDOWN_API_KEY, knfv.Empty, nil},
 		{SERVER_PORT, knfv.Empty, nil},
 
+		{MAIN_MAX_PROCS, knfv.TypeNum, nil},
+		{CACHE_PERIOD, knfv.TypeNum, nil},
+		{SERVER_PORT, knfv.TypeNum, nil},
+
 		{BADGE_FONT, knff.Perms, "FRS"},
 		{BADGE_STYLE, knfv.NotContains, []string{
 			STYLE_PLASTIC, STYLE_FLAT, STYLE_FLAT_SQUARE,
@@ -157,6 +166,9 @@ func validateConfig() {
 
 		{UPDOWN_API_KEY, knfv.NotLen, 23},
 		{UPDOWN_API_KEY, knfr.Regexp, "^ro-[0-9A-Za-z]{20}$"},
+
+		{MAIN_MAX_PROCS, knfv.Less, MIN_PROCS},
+		{MAIN_MAX_PROCS, knfv.Greater, MAX_PROCS},
 
 		{CACHE_PERIOD, knfv.Less, MIN_CACHE_PERIOD},
 		{CACHE_PERIOD, knfv.Greater, MAX_CACHE_PERIOD},
@@ -183,6 +195,15 @@ func validateConfig() {
 
 		os.Exit(1)
 	}
+}
+
+// configureRuntime configures runtime
+func configureRuntime() {
+	if !knf.HasProp(MAIN_MAX_PROCS) {
+		return
+	}
+
+	runtime.GOMAXPROCS(knf.GetI(MAIN_MAX_PROCS))
 }
 
 // registerSignalHandlers registers signal handlers
