@@ -23,6 +23,14 @@ sudo yum install -y https://yum.kaos.st/get/$(uname -r).rpm
 sudo yum install updown-badge-server
 ```
 
+### Badges examples
+
+| Endpoint              | Badges |
+|-----------------------|--------|
+| `/{token}/status.svg` | ![status-up](.github/images/status_up.svg) ![status-down](.github/images/status_down.svg) |
+| `/{token}/uptime.svg` ||
+| `/{token}/apdex.svg`  ||
+
 ### Build Status
 
 | Branch | Status |
