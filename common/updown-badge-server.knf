@@ -1,0 +1,49 @@
+# Configuration file for updown-badge-server
+
+[main]
+
+  # Maximum number of CPUs that can be executing simultaneously
+  max-procs: 4
+
+[updown]
+
+  # updown.io read-only API key
+  api-key: 
+
+[badge]
+
+  # Path to font for badge (we recommend using Verdana)
+  font: 
+
+  # Badge style (plastic, flat, flat-square)
+  style: flat
+
+[cache]
+
+  # Status cache period time in seconds (60-3600)
+  period: 300
+
+[server]
+
+  # HTTP server IP
+  ip: 
+
+  # HTTP server port
+  port: 36100
+
+  # URL for redirect request to /
+  redirect: https://kaos.sh/updown-badge-server
+
+[log]
+
+  # Log file dir
+  dir: /var/log/updown-badge-server
+
+  # Path to log file
+  file: {log:dir}/updown-badge-server.log
+
+  # Log permissions
+  perms: 600
+
+  # Default log level (debug/info/warn/error/crit)
+  level: info
