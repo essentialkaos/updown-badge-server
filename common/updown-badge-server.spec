@@ -52,7 +52,7 @@
 
 Summary:         Service for generating badges for updown.io checks
 Name:            updown-badge-server
-Version:         1.1.0
+Version:         1.0.0
 Release:         0%{?dist}
 Group:           Applications/System
 License:         Apache License, Version 2.0
@@ -139,8 +139,5 @@ exit 0
 ################################################################################
 
 %changelog
-* Wed Aug 18 2021 Anton Novojilov <andy@essentialkaos.com> - 1.1.0-0
-- Added number of CPUs configuration
-
 * Sat Aug 14 2021 Anton Novojilov <andy@essentialkaos.com> - 1.0.0-0
 - Initial build for kaos-repo

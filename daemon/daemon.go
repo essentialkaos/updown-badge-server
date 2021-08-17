@@ -39,7 +39,7 @@ import (
 // Basic service info
 const (
 	APP  = "UpDownBadgeServer"
-	VER  = "1.1.0"
+	VER  = "1.0.0"
 	DESC = "Service for generating badges for updown.io checks"
 )
 
