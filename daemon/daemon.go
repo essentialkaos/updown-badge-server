@@ -62,17 +62,18 @@ const (
 
 // Configuration file properties
 const (
-	MAIN_MAX_PROCS = "main:max-procs"
-	UPDOWN_API_KEY = "updown:api-key"
-	BADGE_FONT     = "badge:font"
-	BADGE_STYLE    = "badge:style"
-	CACHE_PERIOD   = "cache:period"
-	SERVER_IP      = "server:ip"
-	SERVER_PORT    = "server:port"
-	LOG_DIR        = "log:dir"
-	LOG_FILE       = "log:file"
-	LOG_PERMS      = "log:perms"
-	LOG_LEVEL      = "log:level"
+	MAIN_MAX_PROCS  = "main:max-procs"
+	UPDOWN_API_KEY  = "updown:api-key"
+	BADGE_FONT      = "badge:font"
+	BADGE_STYLE     = "badge:style"
+	CACHE_PERIOD    = "cache:period"
+	SERVER_IP       = "server:ip"
+	SERVER_PORT     = "server:port"
+	SERVER_REDIRECT = "server:redirect"
+	LOG_DIR         = "log:dir"
+	LOG_FILE        = "log:file"
+	LOG_PERMS       = "log:perms"
+	LOG_LEVEL       = "log:level"
 )
 
 // Pid file info
@@ -96,6 +97,7 @@ var server *fasthttp.Server
 var badgeCache *cache.Cache
 var badgeGen *badge.Generator
 var badgeStyle string
+var redirectURL string
 
 // ////////////////////////////////////////////////////////////////////////////////// //
 
@@ -177,6 +179,7 @@ func validateConfig() {
 		{SERVER_PORT, knfv.Greater, MAX_PORT},
 
 		{SERVER_IP, knfn.IP, nil},
+		{SERVER_REDIRECT, knfn.URL, nil},
 
 		{LOG_DIR, knff.Perms, "DW"},
 		{LOG_DIR, knff.Perms, "DX"},
@@ -246,6 +249,8 @@ func start() {
 	var err error
 
 	badgeStyle = knf.GetS(BADGE_STYLE, "flat")
+	redirectURL = knf.GetS(SERVER_REDIRECT)
+
 	badgeGen, err = badge.NewGenerator(knf.GetS(BADGE_FONT), 11)
 
 	if err != nil {

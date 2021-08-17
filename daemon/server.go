@@ -59,7 +59,12 @@ func fastHTTPHandler(ctx *fasthttp.RequestCtx) {
 	log.Debug("Got request '%s'", path)
 
 	if !isValidRequestPath(path) {
-		ctx.SetStatusCode(404)
+		if redirectURL == "" {
+			ctx.SetStatusCode(404)
+		} else {
+			ctx.Redirect(redirectURL, 301)
+		}
+
 		return
 	}
 

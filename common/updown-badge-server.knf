@@ -31,6 +31,9 @@
   # HTTP server port
   port: 36100
 
+  # URL for redirect request to /
+  redirect: https://kaos.sh/updown-badge-server
+
 [log]
 
   # Log file dir
