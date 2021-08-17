@@ -2,7 +2,6 @@
 
 <p align="center">
   <a href="https://kaos.sh/w/updown-badge-server/ci"><img src="https://kaos.sh/w/updown-badge-server/ci.svg" alt="GitHub Actions CI Status" /></a>
-  <a href="https://kaos.sh/r/updown-badge-server"><img src="https://kaos.sh/r/updown-badge-server.svg" alt="GoReportCard" /></a>
   <a href="https://kaos.sh/b/updown-badge-server"><img src="https://kaos.sh/b/e17e7c90-8b26-4af8-8737-22a86cea9b45.svg" alt="Codebeat badge" /></a>
   <a href="https://kaos.sh/w/updown-badge-server/codeql"><img src="https://kaos.sh/w/updown-badge-server/codeql.svg" alt="GitHub Actions CodeQL Status" /></a>
   <a href="#license"><img src="https://gh.kaos.st/apache2.svg"></a>
