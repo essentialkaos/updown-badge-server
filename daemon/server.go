@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"pkg.re/essentialkaos/ek.v12/color"
+	"pkg.re/essentialkaos/ek.v12/easing"
 	"pkg.re/essentialkaos/ek.v12/log"
 	"pkg.re/essentialkaos/ek.v12/mathutil"
 	"pkg.re/essentialkaos/ek.v12/strutil"
@@ -168,7 +169,7 @@ func genUptimeBadge(token string) []byte {
 		return genBadge(label, "100%", getColorForStatus(1))
 	}
 
-	v := mathutil.BetweenF((apdex.Value-70)/30, 0, 1)
+	v := mathutil.BetweenF((status.Uptime-70)/30, 0, 1)
 
 	return genBadge(label, value, getColorForStatus(v))
 }
