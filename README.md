@@ -27,8 +27,8 @@ sudo yum install updown-badge-server
 | Endpoint              | Badges |
 |-----------------------|--------|
 | `/{token}/status.svg` | ![status-up](.github/images/status_up.svg) ![status-down](.github/images/status_down.svg) |
-| `/{token}/uptime.svg` | ![uptime-1](.github/images/uptime_100.svg) ![uptime-2](.github/images/uptime_99.svg) ![uptime-3](.github/images/uptime_94.svg) ![uptime-4](.github/images/uptime_88.svg) |
-| `/{token}/apdex.svg`  | ![apdex-1](.github/images/apdex_1.svg) ![apdex-1](.github/images/apdex_098.svg) ![apdex-1](.github/images/apdex_094.svg) ![apdex-1](.github/images/apdex_085.svg) |
+| `/{token}/uptime.svg` | ![uptime-1](.github/images/uptime_1.svg) ![uptime-2](.github/images/uptime_2.svg) ![uptime-3](.github/images/uptime_3.svg) ![uptime-4](.github/images/uptime_4.svg) |
+| `/{token}/apdex.svg`  | ![apdex-1](.github/images/apdex_1.svg) ![apdex-2](.github/images/apdex_2.svg) ![apdex-3](.github/images/apdex_3.svg) ![apdex-4](.github/images/apdex_4.svg) |
 
 ### Build Status
 

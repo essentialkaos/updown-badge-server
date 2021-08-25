@@ -11,7 +11,10 @@ import (
 	"fmt"
 	"strings"
 
+	"pkg.re/essentialkaos/ek.v12/color"
+	"pkg.re/essentialkaos/ek.v12/easing"
 	"pkg.re/essentialkaos/ek.v12/log"
+	"pkg.re/essentialkaos/ek.v12/mathutil"
 	"pkg.re/essentialkaos/ek.v12/strutil"
 
 	"pkg.re/essentialkaos/go-badge.v1"
@@ -158,18 +161,17 @@ func genUptimeBadge(token string) []byte {
 		value = fmt.Sprintf("%.2f%%", status.Uptime)
 	}
 
-	switch {
-	case err != nil || status == nil:
+	if err != nil || status == nil {
 		return genBadge(label, "unknown", badge.COLOR_INACTIVE)
-	case status.Uptime < 90:
-		return genBadge(label, value, badge.COLOR_RED)
-	case status.Uptime < 95:
-		return genBadge(label, value, badge.COLOR_ORANGE)
-	case status.Uptime < 100:
-		return genBadge(label, value, badge.COLOR_YELLOW)
 	}
 
-	return genBadge(label, "100%", badge.COLOR_GREEN)
+	if status.Uptime >= 100 {
+		return genBadge(label, "100%", getColorForStatus(1))
+	}
+
+	v := mathutil.BetweenF((status.Uptime-70)/30, 0, 1)
+
+	return genBadge(label, value, getColorForStatus(v))
 }
 
 // genApdexBadge generates apdex badge
@@ -185,18 +187,17 @@ func genApdexBadge(token string) []byte {
 		value = fmt.Sprintf("%.2f", apdex.Value)
 	}
 
-	switch {
-	case err != nil || apdex == nil:
+	if err != nil || apdex == nil {
 		return genBadge(label, "unknown", badge.COLOR_INACTIVE)
-	case apdex.Value < 0.8:
-		return genBadge(label, value, badge.COLOR_RED)
-	case apdex.Value < 0.9:
-		return genBadge(label, value, badge.COLOR_ORANGE)
-	case apdex.Value < 0.995:
-		return genBadge(label, value, badge.COLOR_YELLOW)
 	}
 
-	return genBadge(label, "1.0", badge.COLOR_GREEN)
+	if apdex.Value > 0.995 {
+		return genBadge(label, "1.0", getColorForStatus(1))
+	}
+
+	v := mathutil.BetweenF((apdex.Value-0.7)/0.3, 0, 1)
+
+	return genBadge(label, value, getColorForStatus(v))
 }
 
 // genBadge generates badge with global style
@@ -226,6 +227,13 @@ func isValidRequestPath(path string) bool {
 	}
 
 	return true
+}
+
+// getColorForStatus generates color from green to red
+func getColorForStatus(p float64) string {
+	h := easing.CircIn(p, 0, 0.287, 1.0)
+	k := color.HSV{h, 0.916, 0.80}
+	return k.ToRGB().ToHex().ToWeb(true)
 }
 
 // parsePath parses request path
