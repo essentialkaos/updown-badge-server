@@ -231,7 +231,7 @@ func isValidRequestPath(path string) bool {
 
 // getColorForStatus generates color from green to red
 func getColorForStatus(p float64) string {
-	h := easing.QuadIn(p, 0, 0.287, 1.0)
+	h := easing.CircIn(p, 0, 0.287, 1.0)
 	k := color.HSV{h, 0.916, 0.80}
 	return k.ToRGB().ToHex().ToWeb(true)
 }
