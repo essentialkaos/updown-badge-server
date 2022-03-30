@@ -52,11 +52,11 @@
 
 Summary:         Service for generating badges for updown.io checks
 Name:            updown-badge-server
-Version:         1.1.0
+Version:         1.1.1
 Release:         0%{?dist}
 Group:           Applications/System
 License:         Apache License, Version 2.0
-URL:             https://github.com/essentialkaos/updown-badge-server
+URL:             https://kaos.sh/updown-badge-server
 
 Source0:         https://source.kaos.st/%{name}/%{name}-%{version}.tar.bz2
 
@@ -64,7 +64,7 @@ Source100:       checksum.sha512
 
 BuildRoot:       %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:   golang >= 1.16
+BuildRequires:   golang >= 1.17
 
 Requires:        kaosv >= 2.16
 Requires:        systemd
@@ -139,6 +139,11 @@ exit 0
 ################################################################################
 
 %changelog
+* Thu Mar 31 2022 Anton Novojilov <andy@essentialkaos.com> - 1.1.1-0
+- Removed pkg.re usage
+- Added module info
+- Added Dependabot configuration
+
 * Wed Aug 25 2021 Anton Novojilov <andy@essentialkaos.com> - 1.1.0-0
 - Improved color generation for uptime and apdex badges
 
