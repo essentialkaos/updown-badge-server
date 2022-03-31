@@ -85,10 +85,8 @@ Service for generating badges for updown.io checks.
 
 %build
 export GOPATH=$(pwd)
-export GO111MODULE=auto
-
 pushd %{srcdir}
-  %{__make} %{?_smp_mflags} all
+  go build -mod vendor %{name}.go
 popd
 
 %install
