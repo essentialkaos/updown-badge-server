@@ -2,7 +2,7 @@ package daemon
 
 // ////////////////////////////////////////////////////////////////////////////////// //
 //                                                                                    //
-//                         Copyright (c) 2021 ESSENTIAL KAOS                          //
+//                         Copyright (c) 2022 ESSENTIAL KAOS                          //
 //      Apache License, Version 2.0 <https://www.apache.org/licenses/LICENSE-2.0>     //
 //                                                                                    //
 // ////////////////////////////////////////////////////////////////////////////////// //
@@ -11,13 +11,13 @@ import (
 	"fmt"
 	"strings"
 
-	"pkg.re/essentialkaos/ek.v12/color"
-	"pkg.re/essentialkaos/ek.v12/easing"
-	"pkg.re/essentialkaos/ek.v12/log"
-	"pkg.re/essentialkaos/ek.v12/mathutil"
-	"pkg.re/essentialkaos/ek.v12/strutil"
+	"github.com/essentialkaos/ek/v12/color"
+	"github.com/essentialkaos/ek/v12/easing"
+	"github.com/essentialkaos/ek/v12/log"
+	"github.com/essentialkaos/ek/v12/mathutil"
+	"github.com/essentialkaos/ek/v12/strutil"
 
-	"pkg.re/essentialkaos/go-badge.v1"
+	"github.com/essentialkaos/go-badge"
 
 	"github.com/valyala/fasthttp"
 )

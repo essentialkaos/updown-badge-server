@@ -2,7 +2,7 @@ package daemon
 
 // ////////////////////////////////////////////////////////////////////////////////// //
 //                                                                                    //
-//                         Copyright (c) 2021 ESSENTIAL KAOS                          //
+//                         Copyright (c) 2022 ESSENTIAL KAOS                          //
 //      Apache License, Version 2.0 <https://www.apache.org/licenses/LICENSE-2.0>     //
 //                                                                                    //
 // ////////////////////////////////////////////////////////////////////////////////// //
@@ -13,21 +13,21 @@ import (
 	"strings"
 	"time"
 
-	"pkg.re/essentialkaos/ek.v12/cache"
-	"pkg.re/essentialkaos/ek.v12/fmtc"
-	"pkg.re/essentialkaos/ek.v12/knf"
-	"pkg.re/essentialkaos/ek.v12/log"
-	"pkg.re/essentialkaos/ek.v12/options"
-	"pkg.re/essentialkaos/ek.v12/pid"
-	"pkg.re/essentialkaos/ek.v12/signal"
-	"pkg.re/essentialkaos/ek.v12/usage"
+	"github.com/essentialkaos/ek/v12/cache"
+	"github.com/essentialkaos/ek/v12/fmtc"
+	"github.com/essentialkaos/ek/v12/knf"
+	"github.com/essentialkaos/ek/v12/log"
+	"github.com/essentialkaos/ek/v12/options"
+	"github.com/essentialkaos/ek/v12/pid"
+	"github.com/essentialkaos/ek/v12/signal"
+	"github.com/essentialkaos/ek/v12/usage"
 
-	knfv "pkg.re/essentialkaos/ek.v12/knf/validators"
-	knff "pkg.re/essentialkaos/ek.v12/knf/validators/fs"
-	knfn "pkg.re/essentialkaos/ek.v12/knf/validators/network"
-	knfr "pkg.re/essentialkaos/ek.v12/knf/validators/regexp"
+	knfv "github.com/essentialkaos/ek/v12/knf/validators"
+	knff "github.com/essentialkaos/ek/v12/knf/validators/fs"
+	knfn "github.com/essentialkaos/ek/v12/knf/validators/network"
+	knfr "github.com/essentialkaos/ek/v12/knf/validators/regexp"
 
-	"pkg.re/essentialkaos/go-badge.v1"
+	"github.com/essentialkaos/go-badge"
 
 	"github.com/valyala/fasthttp"
 
@@ -39,7 +39,7 @@ import (
 // Basic service info
 const (
 	APP  = "UpDownBadgeServer"
-	VER  = "1.1.0"
+	VER  = "1.1.1"
 	DESC = "Service for generating badges for updown.io checks"
 )
 
