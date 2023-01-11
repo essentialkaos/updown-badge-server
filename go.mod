@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/essentialkaos/ek/v12 v12.57.0
 	github.com/essentialkaos/go-badge v1.3.1
-	github.com/valyala/fasthttp v1.43.0
+	github.com/valyala/fasthttp v1.44.0
 )
 
 require (
