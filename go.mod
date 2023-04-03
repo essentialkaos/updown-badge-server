@@ -3,7 +3,7 @@ module github.com/essentialkaos/updown-badge-server
 go 1.17
 
 require (
-	github.com/essentialkaos/ek/v12 v12.63.0
+	github.com/essentialkaos/ek/v12 v12.64.0
 	github.com/essentialkaos/go-badge v1.3.2
 	github.com/valyala/fasthttp v1.45.0
 )
