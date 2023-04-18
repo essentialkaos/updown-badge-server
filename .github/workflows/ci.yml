@@ -66,6 +66,7 @@ jobs:
 
       - name: Check Golang sources with Aligo
         uses: essentialkaos/aligo-action@v2
+        with:
           files: ./...
 
   Perfecto:
