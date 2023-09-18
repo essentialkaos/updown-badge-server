@@ -39,7 +39,7 @@ import (
 // Basic service info
 const (
 	APP  = "UpDownBadgeServer"
-	VER  = "1.1.1"
+	VER  = "1.1.2"
 	DESC = "Service for generating badges for updown.io checks"
 )
 
@@ -261,7 +261,7 @@ func start() {
 	udAPI = api.NewClient(knf.GetS(UPDOWN_API_KEY))
 	udAPI.SetUserAgent(APP, VER)
 
-	badgeCache = cache.New(knf.GetD(CACHE_PERIOD), time.Minute)
+	badgeCache = cache.New(knf.GetD(CACHE_PERIOD, knf.Second), time.Minute)
 
 	err = startHTTPServer(knf.GetS(SERVER_IP), knf.GetS(SERVER_PORT))
 
