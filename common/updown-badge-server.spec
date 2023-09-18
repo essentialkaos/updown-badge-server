@@ -57,7 +57,6 @@ rm -rf %{buildroot}
 install -dm 755 %{buildroot}%{_bindir}
 install -dm 755 %{buildroot}%{_sysconfdir}
 install -dm 755 %{buildroot}%{_sysconfdir}/logrotate.d
-install -dm 755 %{buildroot}%{_initddir}
 install -dm 755 %{buildroot}%{_unitdir}
 install -dm 755 %{buildroot}%{_localstatedir}/log/%{name}
 
@@ -66,9 +65,6 @@ install -pm 755 %{name}/%{name} \
 
 install -pm 644 %{name}/common/%{name}.knf \
                 %{buildroot}%{_sysconfdir}/
-
-install -pm 755 %{name}/common/%{name}.init \
-                %{buildroot}%{_initddir}/%{name}
 
 install -pm 644 %{name}/common/%{name}.logrotate \
                 %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
@@ -93,7 +89,6 @@ exit 0
 %config(noreplace) %{_sysconfdir}/%{name}.knf
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %{_unitdir}/%{name}.service
-%{_initddir}/%{name}
 %{_bindir}/%{name}
 
 ################################################################################
