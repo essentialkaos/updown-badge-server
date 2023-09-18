@@ -26,9 +26,9 @@ import (
 
 const (
 	CHECK_UNKNOWN uint8 = 0
-	CHECK_STATUS        = 1
-	CHECK_UPTIME        = 2
-	CHECK_APDEX         = 3
+	CHECK_STATUS  uint8 = 1
+	CHECK_UPTIME  uint8 = 2
+	CHECK_APDEX   uint8 = 3
 )
 
 const (
@@ -169,7 +169,7 @@ func genUptimeBadge(token string) []byte {
 		return genBadge(label, "100%", getColorForStatus(1))
 	}
 
-	v := mathutil.BetweenF((status.Uptime-70)/30, 0, 1)
+	v := mathutil.Between((status.Uptime-70)/30, 0, 1)
 
 	return genBadge(label, value, getColorForStatus(v))
 }
@@ -195,7 +195,7 @@ func genApdexBadge(token string) []byte {
 		return genBadge(label, "1.0", getColorForStatus(1))
 	}
 
-	v := mathutil.BetweenF((apdex.Value-0.7)/0.3, 0, 1)
+	v := mathutil.Between((apdex.Value-0.7)/0.3, 0, 1)
 
 	return genBadge(label, value, getColorForStatus(v))
 }

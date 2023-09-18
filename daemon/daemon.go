@@ -220,7 +220,7 @@ func registerSignalHandlers() {
 
 // setupLogger configures logger subsystems
 func setupLogger() {
-	err := log.Set(knf.GetS(LOG_FILE), knf.GetM(LOG_PERMS, 644))
+	err := log.Set(knf.GetS(LOG_FILE), knf.GetM(LOG_PERMS, 0644))
 
 	if err != nil {
 		printErrorAndExit(err.Error())
@@ -295,11 +295,6 @@ func printError(f string, a ...interface{}) {
 	fmtc.Fprintf(os.Stderr, "{r}"+f+"{!}\n", a...)
 }
 
-// printError prints warning message to console
-func printWarn(f string, a ...interface{}) {
-	fmtc.Fprintf(os.Stderr, "{y}"+f+"{!}\n", a...)
-}
-
 // printErrorAndExit print error message and exit with exit code 1
 func printErrorAndExit(f string, a ...interface{}) {
 	printError(f, a...)
@@ -331,7 +326,7 @@ func showUsage() int {
 	info.AddOption(OPT_HELP, "Show this help message")
 	info.AddOption(OPT_VERSION, "Show version")
 
-	info.Render()
+	info.Print()
 
 	return 0
 }
@@ -347,7 +342,7 @@ func showAbout() int {
 		License: "Apache License, Version 2.0 <https://www.apache.org/licenses/LICENSE-2.0>",
 	}
 
-	usage.Render()
+	usage.Print()
 
 	return 0
 }
