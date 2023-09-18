@@ -1,11 +1,13 @@
 [Unit]
 Description=Service for generating badges for updown.io checks
-After=network.target
+Documentation=https://kaos.sh/updown-badge-server
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
 
 [Service]
-PIDFile=/var/run/updown-badge-server/updown-badge-server.pid
-ExecStart=/etc/init.d/updown-badge-server start
-ExecStop=/etc/init.d/updown-badge-server stop
+ExecStart=/usr/bin/updown-badge-server --no-color
+ExecReload=kill -HUP $MAINPID
+SyslogIdentifier=updown-badge-server
 
 [Install]
 WantedBy=multi-user.target

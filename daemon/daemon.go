@@ -18,7 +18,6 @@ import (
 	"github.com/essentialkaos/ek/v12/knf"
 	"github.com/essentialkaos/ek/v12/log"
 	"github.com/essentialkaos/ek/v12/options"
-	"github.com/essentialkaos/ek/v12/pid"
 	"github.com/essentialkaos/ek/v12/signal"
 	"github.com/essentialkaos/ek/v12/usage"
 
@@ -39,7 +38,7 @@ import (
 // Basic service info
 const (
 	APP  = "UpDownBadgeServer"
-	VER  = "1.1.2"
+	VER  = "1.2.0"
 	DESC = "Service for generating badges for updown.io checks"
 )
 
@@ -127,7 +126,6 @@ func Init() {
 	configureRuntime()
 	registerSignalHandlers()
 	setupLogger()
-	createPidFile()
 
 	log.Aux(strings.Repeat("-", 80))
 	log.Aux("%s %s starting…", APP, VER)
@@ -233,17 +231,6 @@ func setupLogger() {
 	}
 }
 
-// createPidFile creates PID file
-func createPidFile() {
-	pid.Dir = PID_DIR
-
-	err := pid.Create(PID_FILE)
-
-	if err != nil {
-		printErrorAndExit(err.Error())
-	}
-}
-
 // start configures and starts all subsystems
 func start() {
 	var err error
@@ -311,7 +298,6 @@ func shutdown(code int) {
 		}
 	}
 
-	pid.Remove(PID_FILE)
 	os.Exit(code)
 }
 
