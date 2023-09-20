@@ -101,11 +101,13 @@ var redirectURL string
 // ////////////////////////////////////////////////////////////////////////////////// //
 
 func Init() {
+	preConfigureUI()
+
 	_, errs := options.Parse(optMap)
 
 	if len(errs) != 0 {
 		for _, err := range errs {
-			printError(err.Error())
+			log.Crit(err.Error())
 		}
 
 		os.Exit(1)
@@ -133,6 +135,16 @@ func Init() {
 	start()
 }
 
+// preConfigureUI preconfigures user interface
+func preConfigureUI() {
+	switch {
+	case os.Getenv("INVOCATION_ID") != "",
+		os.Getenv("SYSTEMCTL_IGNORE_DEPENDENCIES") != "",
+		os.Getenv("NO_COLOR") != "":
+		fmtc.DisableColors = true
+	}
+}
+
 // configureUI configures user interface
 func configureUI() {
 	if options.GetB(OPT_NO_COLOR) {
@@ -145,7 +157,8 @@ func loadConfig() {
 	err := knf.Global(options.GetS(OPT_CONFIG))
 
 	if err != nil {
-		printErrorAndExit(err.Error())
+		log.Crit(err.Error())
+		os.Exit(1)
 	}
 }
 
@@ -188,10 +201,8 @@ func validateConfig() {
 	})
 
 	if len(errs) != 0 {
-		printError("Error while configuration file validation:")
-
 		for _, err := range errs {
-			printError("  %v", err)
+			log.Crit(err.Error())
 		}
 
 		os.Exit(1)
@@ -221,13 +232,15 @@ func setupLogger() {
 	err := log.Set(knf.GetS(LOG_FILE), knf.GetM(LOG_PERMS, 0644))
 
 	if err != nil {
-		printErrorAndExit(err.Error())
+		log.Crit(err.Error())
+		os.Exit(1)
 	}
 
 	err = log.MinLevel(knf.GetS(LOG_LEVEL))
 
 	if err != nil {
-		printErrorAndExit(err.Error())
+		log.Crit(err.Error())
+		os.Exit(1)
 	}
 }
 
@@ -275,17 +288,6 @@ func hupSignalHandler() {
 	log.Info("Received HUP signal, log will be reopened…")
 	log.Reopen()
 	log.Info("Log reopened by HUP signal")
-}
-
-// printError prints error message to console
-func printError(f string, a ...interface{}) {
-	fmtc.Fprintf(os.Stderr, "{r}"+f+"{!}\n", a...)
-}
-
-// printErrorAndExit print error message and exit with exit code 1
-func printErrorAndExit(f string, a ...interface{}) {
-	printError(f, a...)
-	os.Exit(1)
 }
 
 // shutdown stops daemon

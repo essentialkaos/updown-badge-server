@@ -5,8 +5,10 @@ Requires=network.target remote-fs.target
 After=network.target remote-fs.target
 
 [Service]
-ExecStart=/usr/bin/updown-badge-server --no-color
+User=updownbs
+ExecStart=/usr/bin/updown-badge-server
 ExecReload=kill -HUP $MAINPID
+StandardError=syslog
 SyslogIdentifier=updown-badge-server
 
 [Install]

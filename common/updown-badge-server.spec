@@ -6,6 +6,8 @@
 
 %define debug_package  %{nil}
 
+%define user_name      updownbs
+
 ################################################################################
 
 Summary:        Service for generating badges for updown.io checks
@@ -76,8 +78,8 @@ install -pDm 644 %{name}/common/%{name}.service \
 rm -rf %{buildroot}
 
 %pre
-getent group %{name} >/dev/null || groupadd -r %{name}
-getent passwd %{name} >/dev/null || useradd -r -M -g %{name} -s /sbin/nologin %{name}
+getent group %{user_name} >/dev/null || groupadd -r %{user_name}
+getent passwd %{user_name} >/dev/null || useradd -r -M -g %{user_name} -s /sbin/nologin %{user_name}
 exit 0
 
 ################################################################################
@@ -85,7 +87,7 @@ exit 0
 %files
 %defattr(-,root,root,-)
 %doc LICENSE
-%attr(-,%{name},%{name}) %dir %{_localstatedir}/log/%{name}
+%attr(-,%{user_name},%{user_name}) %dir %{_localstatedir}/log/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}.knf
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %{_unitdir}/%{name}.service
