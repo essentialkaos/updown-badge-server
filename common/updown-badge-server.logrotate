@@ -1,9 +1,12 @@
 /var/log/updown-badge-server/*.log {
-    weekly
-    rotate 8
-    copytruncate
-    delaycompress
-    compress
-    notifempty
-    missingok
+  weekly
+  rotate 8
+  copytruncate
+  delaycompress
+  compress
+  notifempty
+  missingok
+  postrotate
+    systemctl reload updown-badge-server.service &> /dev/null || :
+  endscript
 }

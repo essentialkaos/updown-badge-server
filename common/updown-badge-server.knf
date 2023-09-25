@@ -8,12 +8,12 @@
 [updown]
 
   # updown.io read-only API key
-  api-key: 
+  api-key:
 
 [badge]
 
   # Path to font for badge (we recommend using Verdana)
-  font: 
+  font: /usr/share/fonts/Verdana.ttf
 
   # Badge style (plastic, flat, flat-square)
   style: flat

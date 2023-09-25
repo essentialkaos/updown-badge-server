@@ -18,7 +18,6 @@ import (
 	"github.com/essentialkaos/ek/v12/knf"
 	"github.com/essentialkaos/ek/v12/log"
 	"github.com/essentialkaos/ek/v12/options"
-	"github.com/essentialkaos/ek/v12/pid"
 	"github.com/essentialkaos/ek/v12/signal"
 	"github.com/essentialkaos/ek/v12/usage"
 
@@ -39,7 +38,7 @@ import (
 // Basic service info
 const (
 	APP  = "UpDownBadgeServer"
-	VER  = "1.1.1"
+	VER  = "1.2.0"
 	DESC = "Service for generating badges for updown.io checks"
 )
 
@@ -102,11 +101,13 @@ var redirectURL string
 // ////////////////////////////////////////////////////////////////////////////////// //
 
 func Init() {
+	preConfigureUI()
+
 	_, errs := options.Parse(optMap)
 
 	if len(errs) != 0 {
 		for _, err := range errs {
-			printError(err.Error())
+			log.Crit(err.Error())
 		}
 
 		os.Exit(1)
@@ -127,12 +128,21 @@ func Init() {
 	configureRuntime()
 	registerSignalHandlers()
 	setupLogger()
-	createPidFile()
 
 	log.Aux(strings.Repeat("-", 80))
 	log.Aux("%s %s starting…", APP, VER)
 
 	start()
+}
+
+// preConfigureUI preconfigures user interface
+func preConfigureUI() {
+	switch {
+	case os.Getenv("INVOCATION_ID") != "",
+		os.Getenv("SYSTEMCTL_IGNORE_DEPENDENCIES") != "",
+		os.Getenv("NO_COLOR") != "":
+		fmtc.DisableColors = true
+	}
 }
 
 // configureUI configures user interface
@@ -147,7 +157,8 @@ func loadConfig() {
 	err := knf.Global(options.GetS(OPT_CONFIG))
 
 	if err != nil {
-		printErrorAndExit(err.Error())
+		log.Crit(err.Error())
+		os.Exit(1)
 	}
 }
 
@@ -190,10 +201,8 @@ func validateConfig() {
 	})
 
 	if len(errs) != 0 {
-		printError("Error while configuration file validation:")
-
 		for _, err := range errs {
-			printError("  %v", err)
+			log.Crit(err.Error())
 		}
 
 		os.Exit(1)
@@ -218,29 +227,20 @@ func registerSignalHandlers() {
 	}.TrackAsync()
 }
 
-// setupLogger confugures logger subsystems
+// setupLogger configures logger subsystems
 func setupLogger() {
-	err := log.Set(knf.GetS(LOG_FILE), knf.GetM(LOG_PERMS, 644))
+	err := log.Set(knf.GetS(LOG_FILE), knf.GetM(LOG_PERMS, 0644))
 
 	if err != nil {
-		printErrorAndExit(err.Error())
+		log.Crit(err.Error())
+		os.Exit(1)
 	}
 
 	err = log.MinLevel(knf.GetS(LOG_LEVEL))
 
 	if err != nil {
-		printErrorAndExit(err.Error())
-	}
-}
-
-// createPidFile creates PID file
-func createPidFile() {
-	pid.Dir = PID_DIR
-
-	err := pid.Create(PID_FILE)
-
-	if err != nil {
-		printErrorAndExit(err.Error())
+		log.Crit(err.Error())
+		os.Exit(1)
 	}
 }
 
@@ -261,7 +261,7 @@ func start() {
 	udAPI = api.NewClient(knf.GetS(UPDOWN_API_KEY))
 	udAPI.SetUserAgent(APP, VER)
 
-	badgeCache = cache.New(knf.GetD(CACHE_PERIOD), time.Minute)
+	badgeCache = cache.New(knf.GetD(CACHE_PERIOD, knf.Second), time.Minute)
 
 	err = startHTTPServer(knf.GetS(SERVER_IP), knf.GetS(SERVER_PORT))
 
@@ -290,23 +290,7 @@ func hupSignalHandler() {
 	log.Info("Log reopened by HUP signal")
 }
 
-// printError prints error message to console
-func printError(f string, a ...interface{}) {
-	fmtc.Fprintf(os.Stderr, "{r}"+f+"{!}\n", a...)
-}
-
-// printError prints warning message to console
-func printWarn(f string, a ...interface{}) {
-	fmtc.Fprintf(os.Stderr, "{y}"+f+"{!}\n", a...)
-}
-
-// printErrorAndExit print error mesage and exit with exit code 1
-func printErrorAndExit(f string, a ...interface{}) {
-	printError(f, a...)
-	os.Exit(1)
-}
-
-// shutdown stops deamon
+// shutdown stops daemon
 func shutdown(code int) {
 	if server != nil {
 		err := server.Shutdown()
@@ -316,7 +300,6 @@ func shutdown(code int) {
 		}
 	}
 
-	pid.Remove(PID_FILE)
 	os.Exit(code)
 }
 
@@ -331,7 +314,7 @@ func showUsage() int {
 	info.AddOption(OPT_HELP, "Show this help message")
 	info.AddOption(OPT_VERSION, "Show version")
 
-	info.Render()
+	info.Print()
 
 	return 0
 }
@@ -347,7 +330,7 @@ func showAbout() int {
 		License: "Apache License, Version 2.0 <https://www.apache.org/licenses/LICENSE-2.0>",
 	}
 
-	usage.Render()
+	usage.Print()
 
 	return 0
 }
