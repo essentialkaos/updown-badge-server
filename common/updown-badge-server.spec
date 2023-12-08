@@ -12,7 +12,7 @@
 
 Summary:        Service for generating badges for updown.io checks
 Name:           updown-badge-server
-Version:        1.2.0
+Version:        1.3.0
 Release:        0%{?dist}
 Group:          Applications/System
 License:        Apache License, Version 2.0
@@ -96,6 +96,9 @@ exit 0
 ################################################################################
 
 %changelog
+* Fri Dec 08 2023 Anton Novojilov <andy@essentialkaos.com> - 1.3.0-0
+- Dependencies update
+
 * Mon Sep 18 2023 Anton Novojilov <andy@essentialkaos.com> - 1.2.0-0
 - Removed init script usage
 - Fixed compatibility with the latest version of ek package
