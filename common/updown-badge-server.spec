@@ -6,7 +6,9 @@
 
 %define debug_package  %{nil}
 
-%define user_name      updownbs
+################################################################################
+
+%define user_name  updown
 
 ################################################################################
 
@@ -78,8 +80,8 @@ install -pDm 644 %{name}/common/%{name}.service \
 rm -rf %{buildroot}
 
 %pre
-getent group %{user_name} >/dev/null || groupadd -r %{user_name}
-getent passwd %{user_name} >/dev/null || useradd -r -M -g %{user_name} -s /sbin/nologin %{user_name}
+getent group %{user_name} >/dev/null || groupadd -r %{user_name} 2>/dev/null
+getent passwd %{user_name} >/dev/null || useradd -r -M -g %{user_name} -s /sbin/nologin %{user_name} 2>/dev/null
 exit 0
 
 ################################################################################
@@ -97,6 +99,7 @@ exit 0
 
 %changelog
 * Fri Dec 08 2023 Anton Novojilov <andy@essentialkaos.com> - 1.3.0-0
+- Change service user name from 'updownbs' to 'updown'
 - Dependencies update
 
 * Mon Sep 18 2023 Anton Novojilov <andy@essentialkaos.com> - 1.2.0-0
