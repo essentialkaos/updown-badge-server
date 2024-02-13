@@ -238,8 +238,8 @@ func getColorForStatus(p float64) string {
 
 // parsePath parses request path
 func parsePath(path string) (string, uint8) {
-	token := strutil.ReadField(path, 0, false, "/")
-	badge := strutil.ReadField(path, 1, false, "/")
+	token := strutil.ReadField(path, 0, false, '/')
+	badge := strutil.ReadField(path, 1, false, '/')
 
 	switch badge {
 	case "status.svg":
