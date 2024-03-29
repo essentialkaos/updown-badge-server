@@ -19,6 +19,9 @@ import (
 	"github.com/essentialkaos/ek/v12/log"
 	"github.com/essentialkaos/ek/v12/options"
 	"github.com/essentialkaos/ek/v12/signal"
+	"github.com/essentialkaos/ek/v12/support"
+	"github.com/essentialkaos/ek/v12/support/deps"
+	"github.com/essentialkaos/ek/v12/terminal/tty"
 	"github.com/essentialkaos/ek/v12/usage"
 
 	knfv "github.com/essentialkaos/ek/v12/knf/validators"
@@ -38,9 +41,11 @@ import (
 // Basic service info
 const (
 	APP  = "UpDownBadgeServer"
-	VER  = "1.3.0"
+	VER  = "1.3.1"
 	DESC = "Service for generating badges for updown.io checks"
 )
+
+// ////////////////////////////////////////////////////////////////////////////////// //
 
 const (
 	MIN_PORT         = 1025
@@ -56,7 +61,9 @@ const (
 	OPT_CONFIG   = "c:config"
 	OPT_NO_COLOR = "nc:no-color"
 	OPT_HELP     = "h:help"
-	OPT_VERSION  = "v:version"
+	OPT_VER      = "v:version"
+
+	OPT_VERB_VER = "vv:verbose-version"
 )
 
 // Configuration file properties
@@ -75,20 +82,16 @@ const (
 	LOG_LEVEL       = "log:level"
 )
 
-// Pid file info
-const (
-	PID_DIR  = "/var/run/updown-badge-server"
-	PID_FILE = "updown-badge-server.pid"
-)
-
 // ////////////////////////////////////////////////////////////////////////////////// //
 
 // optMap contains information about all supported options
 var optMap = options.Map{
 	OPT_CONFIG:   {Value: "/etc/updown-badge-server.knf"},
 	OPT_NO_COLOR: {Type: options.BOOL},
-	OPT_HELP:     {Type: options.BOOL, Alias: "u:usage"},
-	OPT_VERSION:  {Type: options.BOOL, Alias: "ver"},
+	OPT_HELP:     {Type: options.BOOL},
+	OPT_VER:      {Type: options.MIXED},
+
+	OPT_VERB_VER: {Type: options.BOOL},
 }
 
 var udAPI *api.API
@@ -100,7 +103,8 @@ var redirectURL string
 
 // ////////////////////////////////////////////////////////////////////////////////// //
 
-func Init() {
+// Run is main utility function
+func Run(gomod []byte) {
 	preConfigureUI()
 
 	_, errs := options.Parse(optMap)
@@ -115,12 +119,18 @@ func Init() {
 
 	configureUI()
 
-	if options.GetB(OPT_VERSION) {
-		os.Exit(showAbout())
-	}
-
-	if options.GetB(OPT_HELP) {
-		os.Exit(showUsage())
+	switch {
+	case options.GetB(OPT_VER):
+		genAbout().Print(options.GetS(OPT_VER))
+		os.Exit(0)
+	case options.GetB(OPT_VERB_VER):
+		support.Collect(APP, VER).
+			WithDeps(deps.Extract(gomod)).
+			Print()
+		os.Exit(0)
+	case options.GetB(OPT_HELP):
+		genUsage().Print()
+		os.Exit(0)
 	}
 
 	loadConfig()
@@ -137,10 +147,7 @@ func Init() {
 
 // preConfigureUI preconfigures user interface
 func preConfigureUI() {
-	switch {
-	case os.Getenv("INVOCATION_ID") != "",
-		os.Getenv("SYSTEMCTL_IGNORE_DEPENDENCIES") != "",
-		os.Getenv("NO_COLOR") != "":
+	if !tty.IsTTY() || tty.IsSystemd() {
 		fmtc.DisableColors = true
 	}
 }
@@ -305,23 +312,21 @@ func shutdown(code int) {
 
 // ////////////////////////////////////////////////////////////////////////////////// //
 
-// showUsage prints usage info
-func showUsage() int {
+// genUsage generates usage info
+func genUsage() *usage.Info {
 	info := usage.NewInfo()
 
 	info.AddOption(OPT_CONFIG, "Path to configuration file", "file")
 	info.AddOption(OPT_NO_COLOR, "Disable colors in output")
 	info.AddOption(OPT_HELP, "Show this help message")
-	info.AddOption(OPT_VERSION, "Show version")
+	info.AddOption(OPT_VER, "Show version")
 
-	info.Print()
-
-	return 0
+	return info
 }
 
-// showAbout prints info about version
-func showAbout() int {
-	usage := &usage.About{
+// genAbout generates info about version
+func genAbout() *usage.About {
+	return &usage.About{
 		App:     APP,
 		Version: VER,
 		Desc:    DESC,
@@ -329,8 +334,4 @@ func showAbout() int {
 		Owner:   "ESSENTIAL KAOS",
 		License: "Apache License, Version 2.0 <https://www.apache.org/licenses/LICENSE-2.0>",
 	}
-
-	usage.Print()
-
-	return 0
 }
