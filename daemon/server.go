@@ -2,7 +2,7 @@ package daemon
 
 // ////////////////////////////////////////////////////////////////////////////////// //
 //                                                                                    //
-//                         Copyright (c) 2022 ESSENTIAL KAOS                          //
+//                         Copyright (c) 2024 ESSENTIAL KAOS                          //
 //      Apache License, Version 2.0 <https://www.apache.org/licenses/LICENSE-2.0>     //
 //                                                                                    //
 // ////////////////////////////////////////////////////////////////////////////////// //
@@ -238,8 +238,8 @@ func getColorForStatus(p float64) string {
 
 // parsePath parses request path
 func parsePath(path string) (string, uint8) {
-	token := strutil.ReadField(path, 0, false, "/")
-	badge := strutil.ReadField(path, 1, false, "/")
+	token := strutil.ReadField(path, 0, false, '/')
+	badge := strutil.ReadField(path, 1, false, '/')
 
 	switch badge {
 	case "status.svg":
