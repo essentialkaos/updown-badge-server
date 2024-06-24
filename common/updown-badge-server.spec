@@ -14,7 +14,7 @@
 
 Summary:        Service for generating badges for updown.io checks
 Name:           updown-badge-server
-Version:        1.3.1
+Version:        1.3.2
 Release:        0%{?dist}
 Group:          Applications/System
 License:        Apache License, Version 2.0
@@ -43,13 +43,15 @@ Service for generating badges for updown.io checks.
 %{crc_check}
 
 %setup -q
-
-%build
 if [[ ! -d "%{name}/vendor" ]] ; then
-  echo "This package requires vendored dependencies"
+  echo -e "----\nThis package requires vendored dependencies\n----"
+  exit 1
+elif [[ -f "%{name}/%{name}" ]] ; then
+  echo -e "----\nSources must not contain precompiled binaries\n----"
   exit 1
 fi
 
+%build
 pushd %{name}
   go build %{name}.go
   cp LICENSE ..
@@ -98,6 +100,10 @@ exit 0
 ################################################################################
 
 %changelog
+* Mon Jun 24 2024 Anton Novojilov <andy@essentialkaos.com> - 1.3.2-0
+- Code refactoring
+- Dependencies update
+
 * Sat Mar 30 2024 Anton Novojilov <andy@essentialkaos.com> - 1.3.1-0
 - Improved support information gathering
 - Code refactoring
