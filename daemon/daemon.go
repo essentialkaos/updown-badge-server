@@ -21,6 +21,7 @@ import (
 	"github.com/essentialkaos/ek/v12/signal"
 	"github.com/essentialkaos/ek/v12/support"
 	"github.com/essentialkaos/ek/v12/support/deps"
+	"github.com/essentialkaos/ek/v12/terminal"
 	"github.com/essentialkaos/ek/v12/terminal/tty"
 	"github.com/essentialkaos/ek/v12/usage"
 
@@ -41,7 +42,7 @@ import (
 // Basic service info
 const (
 	APP  = "UpDownBadgeServer"
-	VER  = "1.3.1"
+	VER  = "1.3.2"
 	DESC = "Service for generating badges for updown.io checks"
 )
 
@@ -78,7 +79,7 @@ const (
 	SERVER_REDIRECT = "server:redirect"
 	LOG_DIR         = "log:dir"
 	LOG_FILE        = "log:file"
-	LOG_PERMS       = "log:perms"
+	LOG_MODE        = "log:mode"
 	LOG_LEVEL       = "log:level"
 )
 
@@ -109,11 +110,9 @@ func Run(gomod []byte) {
 
 	_, errs := options.Parse(optMap)
 
-	if len(errs) != 0 {
-		for _, err := range errs {
-			log.Crit(err.Error())
-		}
-
+	if !errs.IsEmpty() {
+		terminal.Error("Options parsing errors:")
+		terminal.Error(errs.String())
 		os.Exit(1)
 	}
 
@@ -236,7 +235,7 @@ func registerSignalHandlers() {
 
 // setupLogger configures logger subsystems
 func setupLogger() {
-	err := log.Set(knf.GetS(LOG_FILE), knf.GetM(LOG_PERMS, 0644))
+	err := log.Set(knf.GetS(LOG_FILE), knf.GetM(LOG_MODE, 0644))
 
 	if err != nil {
 		log.Crit(err.Error())

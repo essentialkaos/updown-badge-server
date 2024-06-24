@@ -5,11 +5,14 @@ Requires=network.target remote-fs.target
 After=network.target remote-fs.target
 
 [Service]
-User=updownbs
-ExecStart=/usr/bin/updown-badge-server
-ExecReload=kill -HUP $MAINPID
-StandardError=syslog
-SyslogIdentifier=updown-badge-server
+Type=simple
+User=updown
+EnvironmentFile=/etc/sysconfig/updown-badge-server
+ExecStart=/usr/bin/updown-badge-server -c /etc/updown-badge-server.knf
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+StandardError=file:/var/log/updown-badge-server/startup.log
+PrivateTmp=true
 
 [Install]
 WantedBy=multi-user.target
