@@ -33,7 +33,7 @@ import (
 	knfn "github.com/essentialkaos/ek/v13/knf/validators/network"
 	knfr "github.com/essentialkaos/ek/v13/knf/validators/regexp"
 
-	"github.com/essentialkaos/go-badge"
+	badge "github.com/essentialkaos/go-badge"
 
 	"github.com/valyala/fasthttp"
 
@@ -280,7 +280,7 @@ func setupCache() error {
 	var err error
 
 	badgeCache, err = memory.New(memory.Config{
-		DefaultExpiration: knf.GetD(CACHE_PERIOD, knf.Second),
+		DefaultExpiration: knf.GetD(CACHE_PERIOD, knf.SECOND),
 		CleanupInterval:   15 * time.Second,
 	})
 
