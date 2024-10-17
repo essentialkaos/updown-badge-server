@@ -11,11 +11,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/essentialkaos/ek/v12/color"
-	"github.com/essentialkaos/ek/v12/easing"
-	"github.com/essentialkaos/ek/v12/log"
-	"github.com/essentialkaos/ek/v12/mathutil"
-	"github.com/essentialkaos/ek/v12/strutil"
+	"github.com/essentialkaos/ek/v13/color"
+	"github.com/essentialkaos/ek/v13/easing"
+	"github.com/essentialkaos/ek/v13/log"
+	"github.com/essentialkaos/ek/v13/mathutil"
+	"github.com/essentialkaos/ek/v13/strutil"
 
 	"github.com/essentialkaos/go-badge"
 
