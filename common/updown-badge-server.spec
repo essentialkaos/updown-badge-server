@@ -14,7 +14,7 @@
 
 Summary:        Service for generating badges for updown.io checks
 Name:           updown-badge-server
-Version:        1.3.2
+Version:        1.4.0
 Release:        0%{?dist}
 Group:          Applications/System
 License:        Apache License, Version 2.0
@@ -26,7 +26,7 @@ Source100:      checksum.sha512
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  golang >= 1.21
+BuildRequires:  golang >= 1.22
 
 Requires:       systemd
 
@@ -100,6 +100,10 @@ exit 0
 ################################################################################
 
 %changelog
+* Thu Oct 10 2024 Anton Novojilov <andy@essentialkaos.com> - 1.4.0-0
+- Code refactoring
+- Dependencies update
+
 * Mon Jun 24 2024 Anton Novojilov <andy@essentialkaos.com> - 1.3.2-0
 - Code refactoring
 - Dependencies update
