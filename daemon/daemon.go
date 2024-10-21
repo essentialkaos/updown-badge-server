@@ -8,29 +8,32 @@ package daemon
 // ////////////////////////////////////////////////////////////////////////////////// //
 
 import (
+	"fmt"
 	"os"
 	"runtime"
-	"strings"
 	"time"
 
-	"github.com/essentialkaos/ek/v12/cache"
-	"github.com/essentialkaos/ek/v12/fmtc"
-	"github.com/essentialkaos/ek/v12/knf"
-	"github.com/essentialkaos/ek/v12/log"
-	"github.com/essentialkaos/ek/v12/options"
-	"github.com/essentialkaos/ek/v12/signal"
-	"github.com/essentialkaos/ek/v12/support"
-	"github.com/essentialkaos/ek/v12/support/deps"
-	"github.com/essentialkaos/ek/v12/terminal"
-	"github.com/essentialkaos/ek/v12/terminal/tty"
-	"github.com/essentialkaos/ek/v12/usage"
+	"github.com/essentialkaos/ek/v13/cache"
+	"github.com/essentialkaos/ek/v13/cache/memory"
+	"github.com/essentialkaos/ek/v13/errors"
+	"github.com/essentialkaos/ek/v13/fmtc"
+	"github.com/essentialkaos/ek/v13/knf"
+	"github.com/essentialkaos/ek/v13/log"
+	"github.com/essentialkaos/ek/v13/options"
+	"github.com/essentialkaos/ek/v13/signal"
+	"github.com/essentialkaos/ek/v13/support"
+	"github.com/essentialkaos/ek/v13/support/deps"
+	"github.com/essentialkaos/ek/v13/support/services"
+	"github.com/essentialkaos/ek/v13/terminal"
+	"github.com/essentialkaos/ek/v13/terminal/tty"
+	"github.com/essentialkaos/ek/v13/usage"
 
-	knfv "github.com/essentialkaos/ek/v12/knf/validators"
-	knff "github.com/essentialkaos/ek/v12/knf/validators/fs"
-	knfn "github.com/essentialkaos/ek/v12/knf/validators/network"
-	knfr "github.com/essentialkaos/ek/v12/knf/validators/regexp"
+	knfv "github.com/essentialkaos/ek/v13/knf/validators"
+	knff "github.com/essentialkaos/ek/v13/knf/validators/fs"
+	knfn "github.com/essentialkaos/ek/v13/knf/validators/network"
+	knfr "github.com/essentialkaos/ek/v13/knf/validators/regexp"
 
-	"github.com/essentialkaos/go-badge"
+	badge "github.com/essentialkaos/go-badge"
 
 	"github.com/valyala/fasthttp"
 
@@ -42,7 +45,7 @@ import (
 // Basic service info
 const (
 	APP  = "UpDownBadgeServer"
-	VER  = "1.3.2"
+	VER  = "1.4.0"
 	DESC = "Service for generating badges for updown.io checks"
 )
 
@@ -97,7 +100,7 @@ var optMap = options.Map{
 
 var udAPI *api.API
 var server *fasthttp.Server
-var badgeCache *cache.Cache
+var badgeCache cache.Cache
 var badgeGen *badge.Generator
 var badgeStyle string
 var redirectURL string
@@ -112,7 +115,7 @@ func Run(gomod []byte) {
 
 	if !errs.IsEmpty() {
 		terminal.Error("Options parsing errors:")
-		terminal.Error(errs.String())
+		terminal.Error(errs.Error("- "))
 		os.Exit(1)
 	}
 
@@ -125,6 +128,7 @@ func Run(gomod []byte) {
 	case options.GetB(OPT_VERB_VER):
 		support.Collect(APP, VER).
 			WithDeps(deps.Extract(gomod)).
+			WithServices(services.Collect("updown-badge-server")).
 			Print()
 		os.Exit(0)
 	case options.GetB(OPT_HELP):
@@ -132,14 +136,32 @@ func Run(gomod []byte) {
 		os.Exit(0)
 	}
 
-	loadConfig()
-	validateConfig()
-	configureRuntime()
-	registerSignalHandlers()
-	setupLogger()
+	err := errors.Chain(
+		loadConfig,
+		validateConfig,
+		configureRuntime,
+		setupSignalHandlers,
+		setupLogger,
+	)
 
-	log.Aux(strings.Repeat("-", 80))
+	if err != nil {
+		terminal.Error(err)
+		os.Exit(1)
+	}
+
+	log.Divider()
 	log.Aux("%s %s starting…", APP, VER)
+
+	err = errors.Chain(
+		setupCache,
+		setupGenerator,
+		setupAPIClient,
+	)
+
+	if err != nil {
+		log.Crit(err.Error())
+		os.Exit(1)
+	}
 
 	start()
 }
@@ -159,31 +181,32 @@ func configureUI() {
 }
 
 // loadConfig reads and parses configuration file
-func loadConfig() {
+func loadConfig() error {
 	err := knf.Global(options.GetS(OPT_CONFIG))
 
 	if err != nil {
-		log.Crit(err.Error())
-		os.Exit(1)
+		return fmt.Errorf("Can't load configuration: %w", err)
 	}
+
+	return nil
 }
 
 // validateConfig validates configuration file values
-func validateConfig() {
+func validateConfig() error {
 	errs := knf.Validate([]*knf.Validator{
-		{UPDOWN_API_KEY, knfv.Empty, nil},
-		{SERVER_PORT, knfv.Empty, nil},
+		{UPDOWN_API_KEY, knfv.Set, nil},
+		{SERVER_PORT, knfv.Set, nil},
 
 		{MAIN_MAX_PROCS, knfv.TypeNum, nil},
 		{CACHE_PERIOD, knfv.TypeNum, nil},
 		{SERVER_PORT, knfv.TypeNum, nil},
 
 		{BADGE_FONT, knff.Perms, "FRS"},
-		{BADGE_STYLE, knfv.NotContains, []string{
+		{BADGE_STYLE, knfv.SetToAny, []string{
 			STYLE_PLASTIC, STYLE_FLAT, STYLE_FLAT_SQUARE,
 		}},
 
-		{UPDOWN_API_KEY, knfv.NotLen, 23},
+		{UPDOWN_API_KEY, knfv.LenEquals, 23},
 		{UPDOWN_API_KEY, knfr.Regexp, "^ro-[0-9A-Za-z]{20}$"},
 
 		{MAIN_MAX_PROCS, knfv.Less, MIN_PROCS},
@@ -201,57 +224,75 @@ func validateConfig() {
 		{LOG_DIR, knff.Perms, "DW"},
 		{LOG_DIR, knff.Perms, "DX"},
 
-		{LOG_LEVEL, knfv.NotContains, []string{
+		{LOG_LEVEL, knfv.SetToAnyIgnoreCase, []string{
 			"debug", "info", "warn", "error", "crit",
 		}},
 	})
 
 	if len(errs) != 0 {
-		for _, err := range errs {
-			log.Crit(err.Error())
-		}
-
-		os.Exit(1)
+		return errs[0]
 	}
+
+	return nil
 }
 
 // configureRuntime configures runtime
-func configureRuntime() {
+func configureRuntime() error {
 	if !knf.HasProp(MAIN_MAX_PROCS) {
-		return
+		return nil
 	}
 
 	runtime.GOMAXPROCS(knf.GetI(MAIN_MAX_PROCS))
+
+	return nil
 }
 
-// registerSignalHandlers registers signal handlers
-func registerSignalHandlers() {
+// setupSignalHandlers registers signal handlers
+func setupSignalHandlers() error {
 	signal.Handlers{
 		signal.TERM: termSignalHandler,
 		signal.INT:  intSignalHandler,
 		signal.HUP:  hupSignalHandler,
 	}.TrackAsync()
+
+	return nil
 }
 
 // setupLogger configures logger subsystems
-func setupLogger() {
+func setupLogger() error {
 	err := log.Set(knf.GetS(LOG_FILE), knf.GetM(LOG_MODE, 0644))
 
 	if err != nil {
-		log.Crit(err.Error())
-		os.Exit(1)
+		return fmt.Errorf("Can't setup logger: %w", err)
 	}
 
 	err = log.MinLevel(knf.GetS(LOG_LEVEL))
 
 	if err != nil {
-		log.Crit(err.Error())
-		os.Exit(1)
+		return fmt.Errorf("Can't setup logger: %w", err)
 	}
+
+	return nil
 }
 
-// start configures and starts all subsystems
-func start() {
+// setupCache configures in-memory cache
+func setupCache() error {
+	var err error
+
+	badgeCache, err = memory.New(memory.Config{
+		DefaultExpiration: knf.GetD(CACHE_PERIOD, knf.SECOND),
+		CleanupInterval:   15 * time.Second,
+	})
+
+	if err != nil {
+		return fmt.Errorf("Can't configure in-memory cache: %w", err)
+	}
+
+	return nil
+}
+
+// setupGenerator configurates badge generator
+func setupGenerator() error {
 	var err error
 
 	badgeStyle = knf.GetS(BADGE_STYLE, "flat")
@@ -260,21 +301,32 @@ func start() {
 	badgeGen, err = badge.NewGenerator(knf.GetS(BADGE_FONT), 11)
 
 	if err != nil {
-		log.Crit("Can't load font for badges: %v", err)
-		shutdown(1)
+		return fmt.Errorf("Can't create badge generator: %w", err)
 	}
 
+	return nil
+}
+
+// setupAPIClient configures updown.io API client
+func setupAPIClient() error {
 	udAPI = api.NewClient(knf.GetS(UPDOWN_API_KEY))
 	udAPI.SetUserAgent(APP, VER)
 
-	badgeCache = cache.New(knf.GetD(CACHE_PERIOD, knf.Second), time.Minute)
+	return nil
+}
 
-	err = startHTTPServer(knf.GetS(SERVER_IP), knf.GetS(SERVER_PORT))
+// start configures and starts all subsystems
+func start() error {
+	err := startHTTPServer(
+		knf.GetS(SERVER_IP),
+		knf.GetS(SERVER_PORT),
+	)
 
 	if err != nil {
-		log.Crit("Can't start HTTP server: %v", err)
-		shutdown(1)
+		return fmt.Errorf("Can't start HTTP server: %w", err)
 	}
+
+	return nil
 }
 
 // intSignalHandler is INT signal handler
@@ -306,6 +358,7 @@ func shutdown(code int) {
 		}
 	}
 
+	log.Flush()
 	os.Exit(code)
 }
 
