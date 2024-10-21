@@ -15,7 +15,7 @@ import (
 
 	"github.com/essentialkaos/ek/v13/cache"
 	"github.com/essentialkaos/ek/v13/cache/memory"
-	"github.com/essentialkaos/ek/v13/errutil"
+	"github.com/essentialkaos/ek/v13/errors"
 	"github.com/essentialkaos/ek/v13/fmtc"
 	"github.com/essentialkaos/ek/v13/knf"
 	"github.com/essentialkaos/ek/v13/log"
@@ -115,7 +115,7 @@ func Run(gomod []byte) {
 
 	if !errs.IsEmpty() {
 		terminal.Error("Options parsing errors:")
-		terminal.Error(errs.String())
+		terminal.Error(errs.Error("- "))
 		os.Exit(1)
 	}
 
@@ -136,7 +136,7 @@ func Run(gomod []byte) {
 		os.Exit(0)
 	}
 
-	err := errutil.Chain(
+	err := errors.Chain(
 		loadConfig,
 		validateConfig,
 		configureRuntime,
@@ -152,7 +152,7 @@ func Run(gomod []byte) {
 	log.Divider()
 	log.Aux("%s %s starting…", APP, VER)
 
-	err = errutil.Chain(
+	err = errors.Chain(
 		setupCache,
 		setupGenerator,
 		setupAPIClient,
