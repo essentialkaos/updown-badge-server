@@ -5,7 +5,7 @@ go 1.22.8
 require (
 	github.com/essentialkaos/ek/v13 v13.14.2
 	github.com/essentialkaos/go-badge v1.4.1
-	github.com/valyala/fasthttp v1.57.0
+	github.com/valyala/fasthttp v1.58.0
 )
 
 require (
