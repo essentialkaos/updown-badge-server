@@ -14,6 +14,6 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/klauspost/compress v1.17.11 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	golang.org/x/image v0.22.0 // indirect
+	golang.org/x/image v0.24.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 )
