@@ -4,7 +4,7 @@ go 1.22.8
 toolchain go1.23.7
 
 require (
-	github.com/essentialkaos/ek/v13 v13.20.2
+	github.com/essentialkaos/ek/v13 v13.20.3
 	github.com/essentialkaos/go-badge v1.4.1
 	github.com/valyala/fasthttp v1.59.0
 )
