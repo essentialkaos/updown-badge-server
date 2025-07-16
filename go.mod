@@ -5,9 +5,9 @@ go 1.23.6
 toolchain go1.24.1
 
 require (
-	github.com/essentialkaos/ek/v13 v13.30.1
+	github.com/essentialkaos/ek/v13 v13.31.0
 	github.com/essentialkaos/go-badge v1.4.2
-	github.com/valyala/fasthttp v1.63.0
+	github.com/valyala/fasthttp v1.64.0
 )
 
 require (
@@ -17,5 +17,5 @@ require (
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	golang.org/x/image v0.27.0 // indirect
-	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/sys v0.34.0 // indirect
 )
