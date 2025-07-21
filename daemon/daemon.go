@@ -193,7 +193,7 @@ func loadConfig() error {
 
 // validateConfig validates configuration file values
 func validateConfig() error {
-	errs := knf.Validate([]*knf.Validator{
+	errs := knf.Validate(knf.Validators{
 		{UPDOWN_API_KEY, knfv.Set, nil},
 		{SERVER_PORT, knfv.Set, nil},
 
@@ -229,8 +229,8 @@ func validateConfig() error {
 		}},
 	})
 
-	if len(errs) != 0 {
-		return errs[0]
+	if !errs.IsEmpty() {
+		return errs.First()
 	}
 
 	return nil
@@ -238,7 +238,7 @@ func validateConfig() error {
 
 // configureRuntime configures runtime
 func configureRuntime() error {
-	if !knf.HasProp(MAIN_MAX_PROCS) {
+	if !knf.Has(MAIN_MAX_PROCS) {
 		return nil
 	}
 
