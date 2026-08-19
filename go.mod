@@ -1,19 +1,19 @@
 module github.com/essentialkaos/updown-badge-server
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/essentialkaos/ek/v13 v13.38.7
-	github.com/essentialkaos/go-badge v1.4.2
-	github.com/valyala/fasthttp v1.70.0
+	github.com/essentialkaos/go-badge v1.4.3
+	github.com/valyala/fasthttp v1.73.0
 )
 
 require (
-	github.com/andybalholm/brotli v1.2.1 // indirect
+	github.com/andybalholm/brotli v1.2.2 // indirect
 	github.com/essentialkaos/depsy v1.3.1 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/klauspost/compress v1.18.5 // indirect
+	github.com/klauspost/compress v1.19.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	golang.org/x/image v0.32.0 // indirect
-	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/image v0.43.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
 )
